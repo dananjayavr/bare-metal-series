@@ -1,3 +1,8 @@
+### Bare Metal Series
+
+- [Series Playlist](https://www.youtube.com/playlist?list=PLP29wDx6QmW7HaCrRydOnxcy8QmW0SNdQ)
+
+
 ### Prerequisites
 
 - CMake
