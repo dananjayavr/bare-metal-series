@@ -159,6 +159,8 @@ set(EXECUTABLE_BOOTLOADER ${PROJECT_NAME}-bootloader.out)
 add_executable(${EXECUTABLE_BOOTLOADER} ${STM32CUBEMX_GENERATED_FILES}
         source/bootloader/firmware.c
         source/bootloader/firmware.h
+        source/bootloader/retarget.c
+        source/bootloader/retarget.h
 
         source/bootloader/stm32f4xx_hal_conf.h
         source/bootloader/stm32f4xx_it.h

@@ -32,7 +32,6 @@ int main(void)
     MX_USART2_UART_Init();
     MX_TIM2_Init();
 
-
     setup();
     while (1)
     {

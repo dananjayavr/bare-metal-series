@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include "retarget.h"
 
-void setup();
-void loop();
+void setup(void);
+void loop(void);
 
 #endif //_APPLICATION_H
