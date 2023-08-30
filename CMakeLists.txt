@@ -46,16 +46,15 @@ set(STM32CUBEMX_GENERATED_FILES
         BSP/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.c
         BSP/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c
 
-        BSP/Core/Inc/main.h
-        BSP/Core/Inc/stm32f4xx_hal_conf.h
-        BSP/Core/Inc/stm32f4xx_it.h
-
-        BSP/Core/Src/main.c
-        BSP/Core/Src/stm32f4xx_hal_msp.c
-        BSP/Core/Src/stm32f4xx_it.c
-        BSP/Core/Src/system_stm32f4xx.c
-        BSP/startup_stm32f401xe.s
-
+        # For reference, following files have copies of their own in each execution target
+        #BSP/Core/Inc/stm32f4xx_hal_conf.h
+        #BSP/Core/Inc/stm32f4xx_it.h
+        #BSP/Core/Src/stm32f4xx_it.c
+        #BSP/Core/Src/system_stm32f4xx.c
+        #BSP/Core/Inc/main.h
+        #BSP/Core/Src/main.c
+        #BSP/Core/Src/stm32f4xx_hal_msp.c
+        #BSP/startup_stm32f401xe.s
 )
 
 # To disable compiler warnings, etc. for certain files (3rd party files mainly)
@@ -67,30 +66,39 @@ set_source_files_properties(
         COMPILE_FLAGS -Wno-unused-parameter
 )
 
-set(EXECUTABLE ${PROJECT_NAME}.out)
+# Settings for app
+set(EXECUTABLE_APP ${PROJECT_NAME}-app.out)
 
-add_executable(${EXECUTABLE} ${STM32CUBEMX_GENERATED_FILES}
-        source/retarget.c
-        source/application.c
+add_executable(${EXECUTABLE_APP} ${STM32CUBEMX_GENERATED_FILES}
+        source/app/retarget.c
+        source/app/application.c
+        source/app/firmware.c
+
+        source/app/stm32f4xx_hal_conf.h
+        source/app/stm32f4xx_it.h
+        source/app/stm32f4xx_it.c
+        source/app/system_stm32f4xx.c
+
+        source/app/startup_stm32f401xe.s
 )
 
-target_compile_definitions(${EXECUTABLE} PRIVATE
+target_compile_definitions(${EXECUTABLE_APP} PRIVATE
         -DUSE_HAL_DRIVER
         -DSTM32F401xE
 )
 
-target_include_directories(${EXECUTABLE} SYSTEM PRIVATE # adding system will also discard warnings from header files
-        BSP/Core/Inc
+target_include_directories(${EXECUTABLE_APP} SYSTEM PRIVATE # adding system will also discard warnings from header files
+        #BSP/Core/Inc # replicated elsewhere
         BSP/Drivers/STM32F4xx_HAL_Driver/Inc
         BSP/Drivers/CMSIS/Device/ST/STM32F4xx/Include
         BSP/Drivers/CMSIS/Include
 )
 
-target_include_directories(${EXECUTABLE} PRIVATE
-        source
+target_include_directories(${EXECUTABLE_APP} PRIVATE
+        source/app
 )
 
-target_compile_options(${EXECUTABLE} PRIVATE
+target_compile_options(${EXECUTABLE_APP} PRIVATE
         -mcpu=cortex-m4
         -mthumb
         -mfpu=fpv4-sp-d16
@@ -110,8 +118,8 @@ target_compile_options(${EXECUTABLE} PRIVATE
         $<$<CONFIG:Debug>:-Og> #  If CONFIG is Debug, then add option -Og, otherwise add nothing
         )
 
-target_link_options(${EXECUTABLE} PRIVATE
-        -T${CMAKE_SOURCE_DIR}/BSP/STM32F401RETx_FLASH.ld
+target_link_options(${EXECUTABLE_APP} PRIVATE
+        -T${CMAKE_SOURCE_DIR}/source/app/STM32F401RETx_FLASH.ld
         -mcpu=cortex-m4
         -mthumb
         -mfpu=fpv4-sp-d16
@@ -121,22 +129,108 @@ target_link_options(${EXECUTABLE} PRIVATE
         -lc
         -lm
         -lnosys
-        -Wl,-Map=${PROJECT_NAME}.map,--cref
+        -Wl,-Map=${PROJECT_NAME}-app.map,--cref
         -Wl,--gc-sections
         )
 
 # Print executable size
-add_custom_command(TARGET ${EXECUTABLE}
+add_custom_command(TARGET ${EXECUTABLE_APP}
         POST_BUILD
-        COMMAND arm-none-eabi-size ${EXECUTABLE})
+        COMMAND arm-none-eabi-size ${EXECUTABLE_APP})
 
 # Create hex file
-add_custom_command(TARGET ${EXECUTABLE}
+add_custom_command(TARGET ${EXECUTABLE_APP}
         POST_BUILD
-        COMMAND arm-none-eabi-objcopy -O ihex ${EXECUTABLE} ${PROJECT_NAME}.hex
-        COMMAND arm-none-eabi-objcopy -O binary ${EXECUTABLE} ${PROJECT_NAME}.bin
+        COMMAND arm-none-eabi-objcopy -O ihex ${EXECUTABLE_APP} ${PROJECT_NAME}-app.hex
+        COMMAND arm-none-eabi-objcopy -O binary ${EXECUTABLE_APP} ${PROJECT_NAME}-app.bin
 )
 
 # Improve clean target
-set_target_properties(${EXECUTABLE} PROPERTIES ADDITIONAL_CLEAN_FILES
-        "${PROJECT_NAME}.bin;${PROJECT_NAME}.hex;${PROJECT_NAME}.map")
+set_target_properties(${EXECUTABLE_APP} PROPERTIES ADDITIONAL_CLEAN_FILES
+        "${PROJECT_NAME}-app.bin;${PROJECT_NAME}-app.hex;${PROJECT_NAME}-app.map")
+
+##############################################################################################################
+##############################################################################################################
+##############################################################################################################
+
+# Settings for bootloader
+set(EXECUTABLE_BOOTLOADER ${PROJECT_NAME}-bootloader.out)
+
+add_executable(${EXECUTABLE_BOOTLOADER} ${STM32CUBEMX_GENERATED_FILES}
+        source/bootloader/firmware.c
+        source/bootloader/firmware.h
+
+        source/bootloader/stm32f4xx_hal_conf.h
+        source/bootloader/stm32f4xx_it.h
+        source/bootloader/stm32f4xx_it.c
+        source/bootloader/system_stm32f4xx.c
+
+        source/bootloader/startup_stm32f401xe.s
+)
+
+target_compile_definitions(${EXECUTABLE_BOOTLOADER} PRIVATE
+        -DUSE_HAL_DRIVER
+        -DSTM32F401xE
+)
+
+target_include_directories(${EXECUTABLE_BOOTLOADER} SYSTEM PRIVATE # adding system will also discard warnings from header files
+        #BSP/Core/Inc # replicated elsewhere
+        BSP/Drivers/STM32F4xx_HAL_Driver/Inc
+        BSP/Drivers/CMSIS/Device/ST/STM32F4xx/Include
+        BSP/Drivers/CMSIS/Include
+)
+
+target_include_directories(${EXECUTABLE_BOOTLOADER} PRIVATE
+        source/bootloader
+)
+
+target_compile_options(${EXECUTABLE_BOOTLOADER} PRIVATE
+        -mcpu=cortex-m4
+        -mthumb
+        -mfpu=fpv4-sp-d16
+        -mfloat-abi=hard
+
+        -fdata-sections
+        -ffunction-sections
+
+        -Wall
+        -Wextra
+        -pedantic
+
+        #-fno-exceptions # C++ specific flag
+        #-fno-rtti # C++ specific flag
+        $<$<COMPILE_LANGUAGE:CXX>:@${CMAKE_SOURCE_DIR}/gcc-options-cxx.txt> # add C++ options (including the two above)
+
+        $<$<CONFIG:Debug>:-Og> #  If CONFIG is Debug, then add option -Og, otherwise add nothing
+)
+
+target_link_options(${EXECUTABLE_BOOTLOADER} PRIVATE
+        -T${CMAKE_SOURCE_DIR}/source/bootloader/STM32F401RETx_FLASH.ld
+        -mcpu=cortex-m4
+        -mthumb
+        -mfpu=fpv4-sp-d16
+        -mfloat-abi=hard
+        -specs=nano.specs
+        -specs=nosys.specs # added to fix _sbrk not found issue
+        -lc
+        -lm
+        -lnosys
+        -Wl,-Map=${PROJECT_NAME}-bootloader.map,--cref
+        -Wl,--gc-sections
+)
+
+# Print executable size
+add_custom_command(TARGET ${EXECUTABLE_BOOTLOADER}
+        POST_BUILD
+        COMMAND arm-none-eabi-size ${EXECUTABLE_BOOTLOADER})
+
+# Create hex file
+add_custom_command(TARGET ${EXECUTABLE_BOOTLOADER}
+        POST_BUILD
+        COMMAND arm-none-eabi-objcopy -O ihex ${EXECUTABLE_BOOTLOADER} ${PROJECT_NAME}-bootloader.hex
+        COMMAND arm-none-eabi-objcopy -O binary ${EXECUTABLE_BOOTLOADER} ${PROJECT_NAME}-bootloader.bin
+)
+
+# Improve clean target
+set_target_properties(${EXECUTABLE_BOOTLOADER} PROPERTIES ADDITIONAL_CLEAN_FILES
+        "${PROJECT_NAME}-bootloader.bin;${PROJECT_NAME}-bootloader.hex;${PROJECT_NAME}-bootloader.map")

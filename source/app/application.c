@@ -4,7 +4,7 @@
 
 #include "application.h"
 #include "stm32f4xx_ll_gpio.h"
-#include "main.h"
+#include "application.h"
 
 extern UART_HandleTypeDef huart2;
 extern TIM_HandleTypeDef htim2;
@@ -33,7 +33,7 @@ void timer_pwm_set_duty_cycle(float duty_cycle) {
 
 void setup(void) {
     RetargetInit(&huart2);
-    printf("Hello, World!\r\n");
+    printf("Hello, from firmware!\r\n");
 
     timer_pwm_set_duty_cycle(duty_cycle);
     HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_1);
