@@ -18,6 +18,7 @@ extern TIM_HandleTypeDef htim2;
 // ccr = arr * (duty cycle / 100)
 
 float duty_cycle = 0.0f;
+float direction = 1.0f;
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     if(GPIO_Pin == GPIO_PIN_13) {
@@ -40,10 +41,16 @@ void setup(void) {
 
 void loop(void) {
 
-    duty_cycle += 1.0f;
+    duty_cycle += direction;
+
     if(duty_cycle > 100.0f) {
+        duty_cycle = 100.0f;
+        direction = -1.0f;
+    } else if (duty_cycle < 0.0f) {
         duty_cycle = 0.0f;
+        direction = 1.0f;
     }
+
     timer_pwm_set_duty_cycle(duty_cycle);
-    HAL_Delay(10);
+    HAL_Delay(5);
 }
