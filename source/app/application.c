@@ -21,7 +21,7 @@ float direction = 1.0f;
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     if(GPIO_Pin == GPIO_PIN_13) {
-        printf("Button Pressed.\r\n");
+        printf("Button Pressed (app).\r\n");
     }
 }
 

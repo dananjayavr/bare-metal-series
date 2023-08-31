@@ -6,6 +6,10 @@
 #include "stm32f4xx_hal_tim.h"
 #include "application.h"
 
+#define BOOTLOADER_SIZE             (0x8000)
+//#define MAIN_APP_START_ADDRESS    (0x08008000)
+#define MAIN_APP_START_ADDRESS      (FLASH_BASE + BOOTLOADER_SIZE)
+
 TIM_HandleTypeDef htim2;
 UART_HandleTypeDef huart2;
 
@@ -14,13 +18,19 @@ static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_TIM2_Init(void);
 
+static void vector_setup(void);
+
 // MSP functions
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+
+static void vector_setup(void) {
+    SCB->VTOR = BOOTLOADER_SIZE;
+}
 
 int main(void)
 {
     /* MCU Configuration--------------------------------------------------------*/
-
+    vector_setup();
     /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
     HAL_Init();
 

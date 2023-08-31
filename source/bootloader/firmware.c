@@ -2,8 +2,25 @@
 // Created by Dananjaya RAMANAYAKE on 30/08/2023.
 //
 
+
+// PowerShell: Format-Hex .\bare-metal-series-bootloader.bin | more
+// 00 80 01 20 => 20010800 = Top of stack (stack pointer)
+// 65 16 00 08 => 08001665 (-1) = Reset Handler addr
+// 2B 16 00 08 => 0800162B (-1) = NMI Handler addr
+
+// Confirm with bootloader.map
+// 08001664 (usual to see -1 compared to .bin) => (+1) THUMB execution mode
+
+// 00 80 01 20 => 20010800
+// 65 16 00 08 => 08001665
+// 00 80 01 20 => 20018000
+// 09 9D 00 08 => 08009D09
 #include "firmware.h"
 #include <stdio.h>
+
+#define BOOTLOADER_SIZE             (0x8000)
+//#define MAIN_APP_START_ADDRESS    (0x08008000)
+#define MAIN_APP_START_ADDRESS      (FLASH_BASE + BOOTLOADER_SIZE)
 
 UART_HandleTypeDef huart2;
 
@@ -11,13 +28,28 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 
+void jump_to_main(void);
+
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     if(GPIO_Pin == GPIO_PIN_13) {
         printf("Button Pressed.\r\n");
     }
 }
 
+void jump_to_main(void) {
+    typedef void (*void_fn)(void);
+
+    uint32_t const *reset_vector_entry = (uint32_t *) (MAIN_APP_START_ADDRESS + 4U);
+    uint32_t *reset_vector = (uint32_t *)(*reset_vector_entry);
+
+    // Make the address reset_vector a (pointer to) function
+    void_fn jump_function = (void_fn)reset_vector;
+    // execute the function
+    jump_function();
+}
+
 int main(void) {
+
     HAL_Init();
 
     /* Configure the system clock */
@@ -29,6 +61,8 @@ int main(void) {
 
     RetargetInit(&huart2);
     printf("Hello, from bootloader!\r\n");
+
+    jump_to_main();
 
     // Do not return, otherwise ISRs will not work.
     while (1);

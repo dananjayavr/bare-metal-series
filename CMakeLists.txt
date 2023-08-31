@@ -80,6 +80,8 @@ add_executable(${EXECUTABLE_APP} ${STM32CUBEMX_GENERATED_FILES}
         source/app/system_stm32f4xx.c
 
         source/app/startup_stm32f401xe.s
+
+        source/app/bootloader_code.c
 )
 
 target_compile_definitions(${EXECUTABLE_APP} PRIVATE
@@ -231,6 +233,13 @@ add_custom_command(TARGET ${EXECUTABLE_BOOTLOADER}
         POST_BUILD
         COMMAND arm-none-eabi-objcopy -O ihex ${EXECUTABLE_BOOTLOADER} ${PROJECT_NAME}-bootloader.hex
         COMMAND arm-none-eabi-objcopy -O binary ${EXECUTABLE_BOOTLOADER} ${PROJECT_NAME}-bootloader.bin
+)
+
+# Run padding script
+add_custom_command(TARGET ${EXECUTABLE_BOOTLOADER}
+        POST_BUILD
+        COMMAND python ../source/pad-bootloader.py
+        COMMENT "Add padding to bootloader.bin"
 )
 
 # Improve clean target

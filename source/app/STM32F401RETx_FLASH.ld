@@ -68,6 +68,14 @@ FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 512K
 /* Define output sections */
 SECTIONS
 {
+  /* bootloader_section */
+  .bootloader_section :
+  {
+    . = ALIGN(4);
+    KEEP(*(.bootloader_section))
+    . = ALIGN(4);
+  } >FLASH
+
   /* The startup code goes first into FLASH */
   .isr_vector :
   {
