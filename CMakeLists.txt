@@ -145,6 +145,7 @@ add_custom_command(TARGET ${EXECUTABLE_APP}
         POST_BUILD
         COMMAND arm-none-eabi-objcopy -O ihex ${EXECUTABLE_APP} ${PROJECT_NAME}-app.hex
         COMMAND arm-none-eabi-objcopy -O binary ${EXECUTABLE_APP} ${PROJECT_NAME}-app.bin
+        COMMAND arm-none-eabi-objcopy -O binary ${EXECUTABLE_APP} ${PROJECT_NAME}-app.elf
 )
 
 # Improve clean target
@@ -233,6 +234,7 @@ add_custom_command(TARGET ${EXECUTABLE_BOOTLOADER}
         POST_BUILD
         COMMAND arm-none-eabi-objcopy -O ihex ${EXECUTABLE_BOOTLOADER} ${PROJECT_NAME}-bootloader.hex
         COMMAND arm-none-eabi-objcopy -O binary ${EXECUTABLE_BOOTLOADER} ${PROJECT_NAME}-bootloader.bin
+        COMMAND arm-none-eabi-objcopy -O binary ${EXECUTABLE_BOOTLOADER} ${PROJECT_NAME}-bootloader.elf
 )
 
 # Run padding script

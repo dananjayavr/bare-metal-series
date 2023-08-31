@@ -19,7 +19,6 @@
 #include <stdio.h>
 
 #define BOOTLOADER_SIZE             (0x8000)
-//#define MAIN_APP_START_ADDRESS    (0x08008000)
 #define MAIN_APP_START_ADDRESS      (FLASH_BASE + BOOTLOADER_SIZE)
 
 UART_HandleTypeDef huart2;
@@ -38,12 +37,16 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 
 void jump_to_main(void) {
     typedef void (*void_fn)(void);
-
+#if 0
     uint32_t const *reset_vector_entry = (uint32_t *) (MAIN_APP_START_ADDRESS + 4U);
     uint32_t *reset_vector = (uint32_t *)(*reset_vector_entry);
 
     // Make the address reset_vector a (pointer to) function
     void_fn jump_function = (void_fn)reset_vector;
+#else
+    uint32_t const *main_vector_table = (uint32_t *)MAIN_APP_START_ADDRESS;
+    void_fn jump_function = (void_fn)main_vector_table[1];
+#endif
     // execute the function
     jump_function();
 }

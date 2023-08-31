@@ -58,6 +58,10 @@
 
 - Undefined reference to _sbrk: https://stackoverflow.com/questions/5764414/undefined-reference-to-sbrk
 
+### Useful commands
+
+- Dump hex file as assembly: `arm-none-eabi-objdump.exe -D -m arm .\bare-metal-series-bootloader.hex > asm_dump.s`
+
 ### Sources
 
 - https://github.com/posborne/cmsis-svd/blob/master/data/STMicro/STM32F401.svd

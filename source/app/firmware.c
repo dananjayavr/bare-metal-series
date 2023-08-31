@@ -7,7 +7,6 @@
 #include "application.h"
 
 #define BOOTLOADER_SIZE             (0x8000)
-//#define MAIN_APP_START_ADDRESS    (0x08008000)
 #define MAIN_APP_START_ADDRESS      (FLASH_BASE + BOOTLOADER_SIZE)
 
 TIM_HandleTypeDef htim2;
@@ -24,8 +23,7 @@ static void vector_setup(void);
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
 static void vector_setup(void) {
-    //SCB->VTOR = BOOTLOADER_SIZE;
-    SCB->VTOR = MAIN_APP_START_ADDRESS; // both are correct.
+    SCB->VTOR = MAIN_APP_START_ADDRESS;
 }
 
 int main(void)
