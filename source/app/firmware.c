@@ -24,7 +24,8 @@ static void vector_setup(void);
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
 static void vector_setup(void) {
-    SCB->VTOR = BOOTLOADER_SIZE;
+    //SCB->VTOR = BOOTLOADER_SIZE;
+    SCB->VTOR = MAIN_APP_START_ADDRESS; // both are correct.
 }
 
 int main(void)
