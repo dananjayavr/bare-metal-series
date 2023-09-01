@@ -61,9 +61,10 @@ set(STM32CUBEMX_GENERATED_FILES
 set_source_files_properties(
         BSP/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c
         BSP/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c
+        BSP/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c
         BSP/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c
         PROPERTIES
-        COMPILE_FLAGS -Wno-unused-parameter
+        COMPILE_OPTIONS  "-Wno-unused-parameter;-Wno-redundant-decls"
 )
 
 # Settings for app
@@ -112,6 +113,16 @@ target_compile_options(${EXECUTABLE_APP} PRIVATE
         -Wall
         -Wextra
         -pedantic
+
+        -Wshadow
+        -Wimplicit-function-declaration
+        -Wredundant-decls
+        -Wmissing-prototypes
+        -Wstrict-prototypes
+        -fno-common
+        -ffunction-sections
+        -fdata-sections
+
 
         #-fno-exceptions # C++ specific flag
         #-fno-rtti # C++ specific flag
@@ -201,6 +212,15 @@ target_compile_options(${EXECUTABLE_BOOTLOADER} PRIVATE
         -Wall
         -Wextra
         -pedantic
+
+        -Wshadow
+        -Wimplicit-function-declaration
+        -Wredundant-decls
+        -Wmissing-prototypes
+        -Wstrict-prototypes
+        -fno-common
+        -ffunction-sections
+        -fdata-sections
 
         #-fno-exceptions # C++ specific flag
         #-fno-rtti # C++ specific flag
