@@ -10,6 +10,8 @@ extern TIM_HandleTypeDef htim2;
 extern uint8_t uart_ready;
 extern uint8_t data_available;
 
+extern uint8_t data_buffer;
+
 void timer_pwm_set_duty_cycle(float duty_cycle);
 
 #define PRESCALER (84)
@@ -74,9 +76,10 @@ void loop(void) {
         button_flag = 0;
     }
 
+    uint8_t data = uart_read_byte();
     while(data_available) {
-        uint8_t data = uart_read_byte();
         uart_write_byte(data + 1);
+        data_available = 0;
     }
 
     HAL_Delay(5);

@@ -28,9 +28,6 @@ uint32_t uart_read(uint8_t* data, const uint32_t length) {
     return 0;
 }
 uint8_t uart_read_byte(void) {
-    data_available = 0;
-    HAL_UART_Receive_IT(&huart2,&data_buffer,sizeof(uint8_t));
-    while(uart_ready != SET);
-    uart_ready = RESET;
+    HAL_UART_Receive_IT(&huart2,&data_buffer, 1);
     return data_buffer;
 }
