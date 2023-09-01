@@ -71,18 +71,20 @@ set_source_files_properties(
 set(EXECUTABLE_APP ${PROJECT_NAME}-app.out)
 
 add_executable(${EXECUTABLE_APP} ${STM32CUBEMX_GENERATED_FILES}
-        source/app/retarget.c
+        source/app/uart/retarget.c
         source/app/application.c
         source/app/firmware.c
 
-        source/app/stm32f4xx_hal_conf.h
-        source/app/stm32f4xx_it.h
-        source/app/stm32f4xx_it.c
-        source/app/system_stm32f4xx.c
+        source/app/system/stm32f4xx_hal_conf.h
+        source/app/system/stm32f4xx_it.h
+        source/app/system/stm32f4xx_it.c
+        source/app/system/system_stm32f4xx.c
 
-        source/app/startup_stm32f401xe.s
+        source/app/system/startup_stm32f401xe.s
 
         source/app/bootloader_code.c
+        source/app/uart/uart.c
+        source/app/uart/uart.h
 )
 
 target_compile_definitions(${EXECUTABLE_APP} PRIVATE
@@ -99,6 +101,8 @@ target_include_directories(${EXECUTABLE_APP} SYSTEM PRIVATE # adding system will
 
 target_include_directories(${EXECUTABLE_APP} PRIVATE
         source/app
+        source/app/system
+        source/app/uart
 )
 
 target_compile_options(${EXECUTABLE_APP} PRIVATE
@@ -132,7 +136,7 @@ target_compile_options(${EXECUTABLE_APP} PRIVATE
         )
 
 target_link_options(${EXECUTABLE_APP} PRIVATE
-        -T${CMAKE_SOURCE_DIR}/source/app/STM32F401RETx_FLASH.ld
+        -T${CMAKE_SOURCE_DIR}/source/app/system/STM32F401RETx_FLASH.ld
         -mcpu=cortex-m4
         -mthumb
         -mfpu=fpv4-sp-d16
@@ -173,15 +177,17 @@ set(EXECUTABLE_BOOTLOADER ${PROJECT_NAME}-bootloader.out)
 add_executable(${EXECUTABLE_BOOTLOADER} ${STM32CUBEMX_GENERATED_FILES}
         source/bootloader/firmware.c
         source/bootloader/firmware.h
-        source/bootloader/retarget.c
-        source/bootloader/retarget.h
+        source/bootloader/uart/retarget.c
+        source/bootloader/uart/retarget.h
 
-        source/bootloader/stm32f4xx_hal_conf.h
-        source/bootloader/stm32f4xx_it.h
-        source/bootloader/stm32f4xx_it.c
-        source/bootloader/system_stm32f4xx.c
+        source/bootloader/system/stm32f4xx_hal_conf.h
+        source/bootloader/system/stm32f4xx_it.h
+        source/bootloader/system/stm32f4xx_it.c
+        source/bootloader/system/system_stm32f4xx.c
 
-        source/bootloader/startup_stm32f401xe.s
+        source/bootloader/system/startup_stm32f401xe.s
+        source/bootloader/uart/uart.c
+        source/bootloader/uart/uart.h
 )
 
 target_compile_definitions(${EXECUTABLE_BOOTLOADER} PRIVATE
@@ -198,6 +204,8 @@ target_include_directories(${EXECUTABLE_BOOTLOADER} SYSTEM PRIVATE # adding syst
 
 target_include_directories(${EXECUTABLE_BOOTLOADER} PRIVATE
         source/bootloader
+        source/bootloader/system
+        source/bootloader/uart
 )
 
 target_compile_options(${EXECUTABLE_BOOTLOADER} PRIVATE
@@ -230,7 +238,7 @@ target_compile_options(${EXECUTABLE_BOOTLOADER} PRIVATE
 )
 
 target_link_options(${EXECUTABLE_BOOTLOADER} PRIVATE
-        -T${CMAKE_SOURCE_DIR}/source/bootloader/STM32F401RETx_FLASH.ld
+        -T${CMAKE_SOURCE_DIR}/source/bootloader/system/STM32F401RETx_FLASH.ld
         -mcpu=cortex-m4
         -mthumb
         -mfpu=fpv4-sp-d16

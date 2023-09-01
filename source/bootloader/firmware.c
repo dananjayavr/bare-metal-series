@@ -21,7 +21,10 @@
 #define BOOTLOADER_SIZE             (0x8000)
 #define MAIN_APP_START_ADDRESS      (FLASH_BASE + BOOTLOADER_SIZE)
 
-UART_HandleTypeDef huart2;
+UART_HandleTypeDef huart2 = {0};
+uint8_t data_buffer = 0U;
+uint8_t uart_ready = RESET;
+uint8_t data_available = 0;
 
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
@@ -33,6 +36,16 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     if(GPIO_Pin == GPIO_PIN_13) {
         printf("Button Pressed.\r\n");
     }
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
+    uart_ready = SET;
+    data_available = 0;
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+    uart_ready = SET;
+    data_available = 1;
 }
 
 void jump_to_main(void) {
@@ -62,8 +75,9 @@ int main(void) {
     MX_GPIO_Init();
     MX_USART2_UART_Init();
 
-    RetargetInit(&huart2);
-    printf("Hello, from bootloader!\r\n");
+    //RetargetInit(&huart2);
+    //printf("Hello, from bootloader!\r\n");
+    uart_write("uart_write (bootloader)\r\n",25);
 
     jump_to_main();
 
@@ -223,6 +237,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
         GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
         GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
         HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+        HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
+        HAL_NVIC_EnableIRQ(USART2_IRQn);
     }
 
 }
@@ -245,6 +262,8 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
         PA3     ------> USART2_RX
         */
         HAL_GPIO_DeInit(GPIOA, USART_TX_Pin|USART_RX_Pin);
+
+        HAL_NVIC_DisableIRQ(USART2_IRQn);
     }
 
 }

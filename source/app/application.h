@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include "retarget.h"
+#include "uart.h"
 
 void setup(void);
 void loop(void);

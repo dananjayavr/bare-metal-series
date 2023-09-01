@@ -11,6 +11,9 @@
 
 TIM_HandleTypeDef htim2;
 UART_HandleTypeDef huart2;
+uint8_t uart_ready;
+uint8_t data_available;
+uint8_t data_buffer = 0U;
 
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
