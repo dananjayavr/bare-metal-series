@@ -67,11 +67,15 @@ set_source_files_properties(
         COMPILE_OPTIONS  "-Wno-unused-parameter;-Wno-redundant-decls"
 )
 
+# Common files used by both targets (not strictly a library)
+set(COMMON_FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/shared/uart/uart.c
+)
+
 # Settings for app
 set(EXECUTABLE_APP ${PROJECT_NAME}-app.out)
 
-add_executable(${EXECUTABLE_APP} ${STM32CUBEMX_GENERATED_FILES}
-        source/app/uart/retarget.c
+add_executable(${EXECUTABLE_APP} ${STM32CUBEMX_GENERATED_FILES} ${COMMON_FILES}
         source/app/application.c
         source/app/firmware.c
 
@@ -83,8 +87,6 @@ add_executable(${EXECUTABLE_APP} ${STM32CUBEMX_GENERATED_FILES}
         source/app/system/startup_stm32f401xe.s
 
         source/app/bootloader_code.c
-        source/app/uart/uart.c
-        source/app/uart/uart.h
 )
 
 target_compile_definitions(${EXECUTABLE_APP} PRIVATE
@@ -102,7 +104,7 @@ target_include_directories(${EXECUTABLE_APP} SYSTEM PRIVATE # adding system will
 target_include_directories(${EXECUTABLE_APP} PRIVATE
         source/app
         source/app/system
-        source/app/uart
+        source/shared/uart
 )
 
 target_compile_options(${EXECUTABLE_APP} PRIVATE
@@ -174,11 +176,9 @@ set_target_properties(${EXECUTABLE_APP} PROPERTIES ADDITIONAL_CLEAN_FILES
 # Settings for bootloader
 set(EXECUTABLE_BOOTLOADER ${PROJECT_NAME}-bootloader.out)
 
-add_executable(${EXECUTABLE_BOOTLOADER} ${STM32CUBEMX_GENERATED_FILES}
+add_executable(${EXECUTABLE_BOOTLOADER} ${STM32CUBEMX_GENERATED_FILES} ${COMMON_FILES}
         source/bootloader/firmware.c
         source/bootloader/firmware.h
-        source/bootloader/uart/retarget.c
-        source/bootloader/uart/retarget.h
 
         source/bootloader/system/stm32f4xx_hal_conf.h
         source/bootloader/system/stm32f4xx_it.h
@@ -186,8 +186,6 @@ add_executable(${EXECUTABLE_BOOTLOADER} ${STM32CUBEMX_GENERATED_FILES}
         source/bootloader/system/system_stm32f4xx.c
 
         source/bootloader/system/startup_stm32f401xe.s
-        source/bootloader/uart/uart.c
-        source/bootloader/uart/uart.h
 )
 
 target_compile_definitions(${EXECUTABLE_BOOTLOADER} PRIVATE
@@ -205,7 +203,7 @@ target_include_directories(${EXECUTABLE_BOOTLOADER} SYSTEM PRIVATE # adding syst
 target_include_directories(${EXECUTABLE_BOOTLOADER} PRIVATE
         source/bootloader
         source/bootloader/system
-        source/bootloader/uart
+        source/shared/uart
 )
 
 target_compile_options(${EXECUTABLE_BOOTLOADER} PRIVATE
