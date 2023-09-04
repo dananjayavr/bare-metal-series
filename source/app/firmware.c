@@ -12,7 +12,7 @@
 TIM_HandleTypeDef htim2;
 UART_HandleTypeDef huart2;
 uint8_t uart_ready = SET;
-uint8_t data_available = 1U;
+uint8_t data_available = 0U;
 uint8_t data_buffer = 0U;
 
 void SystemClock_Config(void);

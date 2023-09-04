@@ -45,7 +45,7 @@
 /* USER CODE BEGIN PV */
 extern TIM_HandleTypeDef htim2;
 extern UART_HandleTypeDef huart2;
-
+extern uint8_t data_available;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -205,6 +205,7 @@ void SysTick_Handler(void)
 /* USER CODE BEGIN 1 */
 void USART2_IRQHandler(void)
 {
+    data_available = 1;
     HAL_UART_IRQHandler(&huart2);
 }
 
