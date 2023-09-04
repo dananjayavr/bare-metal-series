@@ -34,11 +34,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     }
 }
 
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
-    uart_ready = SET;
-    data_available = 0;
-}
-
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     uart_ready = SET;
     data_available = 1;
@@ -76,8 +71,9 @@ void loop(void) {
         button_flag = 0;
     }
 
-    uint8_t data = uart_read_byte();
+
     while(data_available) {
+        uint8_t data = uart_read_byte();
         uart_write_byte(data + 1);
         data_available = 0;
     }

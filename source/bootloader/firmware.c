@@ -24,7 +24,7 @@
 UART_HandleTypeDef huart2 = {0};
 uint8_t data_buffer = 0U;
 uint8_t uart_ready = RESET;
-uint8_t data_available = 0;
+uint8_t data_available = 1U;
 
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
