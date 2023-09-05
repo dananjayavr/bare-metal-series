@@ -6,14 +6,16 @@
 #include "stm32f4xx_hal_tim.h"
 #include "application.h"
 
+
 #define BOOTLOADER_SIZE             (0x8000)
 #define MAIN_APP_START_ADDRESS      (FLASH_BASE + BOOTLOADER_SIZE)
 
 TIM_HandleTypeDef htim2;
 UART_HandleTypeDef huart2;
 uint8_t uart_ready = SET;
-uint8_t data_available = 0U;
-uint8_t data_buffer = 0U;
+
+ring_buffer_t rb = {0U};
+uint8_t data_buffer[RING_BUFFER_SIZE] = {0U};
 
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);

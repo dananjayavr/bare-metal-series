@@ -6,8 +6,8 @@
 #define _FIRMWARE_H
 
 #include "stm32f4xx_hal.h"
-#include "retarget.h"
 #include "uart.h"
+#include "ring_buffer.h"
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 void Error_Handler(void);

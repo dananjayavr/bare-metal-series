@@ -8,11 +8,11 @@
 extern UART_HandleTypeDef huart2;
 extern TIM_HandleTypeDef htim2;
 extern uint8_t uart_ready;
-extern uint8_t data_available;
-
-extern uint8_t data_buffer;
 
 void timer_pwm_set_duty_cycle(float duty_cycle);
+
+extern ring_buffer_t rb;
+extern uint8_t data_buffer[RING_BUFFER_SIZE];
 
 #define PRESCALER (84)
 #define ARR       (1000)
@@ -26,17 +26,17 @@ float duty_cycle = 0.0f;
 float direction = 1.0f;
 
 uint8_t button_flag = 0;
+uint8_t data;
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     if(GPIO_Pin == GPIO_PIN_13) {
-        // IMPLEMENT ME!
         button_flag = 1;
     }
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     uart_ready = SET;
-    data_available = 1;
+    ring_buffer_write(&rb,data);
 }
 
 void timer_pwm_set_duty_cycle(float duty_cycle) {
@@ -50,6 +50,8 @@ void setup(void) {
 
     timer_pwm_set_duty_cycle(duty_cycle);
     HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_1);
+
+    ring_buffer_setup(&rb,data_buffer,RING_BUFFER_SIZE);
 }
 
 void loop(void) {
@@ -67,15 +69,15 @@ void loop(void) {
     timer_pwm_set_duty_cycle(duty_cycle);
 
     if(button_flag) {
-        uart_write("Button pressed (app).\r\n",23);
+        uart_write("\r\nButton pressed (app).\r\n",23);
         button_flag = 0;
     }
 
+    HAL_UART_Receive_IT(&huart2,&data,1);
 
-    while(data_available) {
+    while(uart_data_available()) {
         uint8_t data = uart_read_byte();
         uart_write_byte(data + 1);
-        data_available = 0;
     }
 
     HAL_Delay(5);

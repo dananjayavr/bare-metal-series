@@ -69,7 +69,9 @@ set_source_files_properties(
 
 # Common files used by both targets (not strictly a library)
 set(COMMON_FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/source/shared/uart/uart.c
+        source/shared/uart/retarget.c
+        source/shared/uart/uart.c
+        source/shared/ring_buffer/ring_buffer.c
 )
 
 # Settings for app
@@ -104,7 +106,9 @@ target_include_directories(${EXECUTABLE_APP} SYSTEM PRIVATE # adding system will
 target_include_directories(${EXECUTABLE_APP} PRIVATE
         source/app
         source/app/system
+        source/shared
         source/shared/uart
+        source/shared/ring_buffer
 )
 
 target_compile_options(${EXECUTABLE_APP} PRIVATE
@@ -203,7 +207,10 @@ target_include_directories(${EXECUTABLE_BOOTLOADER} SYSTEM PRIVATE # adding syst
 target_include_directories(${EXECUTABLE_BOOTLOADER} PRIVATE
         source/bootloader
         source/bootloader/system
+        source/shared
         source/shared/uart
+        source/shared/uart
+        source/shared/ring_buffer
 )
 
 target_compile_options(${EXECUTABLE_BOOTLOADER} PRIVATE

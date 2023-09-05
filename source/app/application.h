@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include "retarget.h"
 #include "uart.h"
+#include "ring_buffer.h"
 
 void setup(void);
 void loop(void);

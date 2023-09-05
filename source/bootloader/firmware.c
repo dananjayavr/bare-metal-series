@@ -75,8 +75,6 @@ int main(void) {
     MX_GPIO_Init();
     MX_USART2_UART_Init();
 
-    //RetargetInit(&huart2);
-    //printf("Hello, from bootloader!\r\n");
     uart_write("uart_write (bootloader)\r\n",25);
 
     jump_to_main();
