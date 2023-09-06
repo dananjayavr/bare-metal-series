@@ -36,7 +36,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     uart_ready = SET;
-    ring_buffer_write(&rb,data);
+    if(!ring_buffer_write(&rb,data)) {
+        // handle failure?
+    }
 }
 
 void timer_pwm_set_duty_cycle(float duty_cycle) {

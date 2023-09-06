@@ -72,6 +72,7 @@ set(COMMON_FILES
         source/shared/uart/retarget.c
         source/shared/uart/uart.c
         source/shared/ring_buffer/ring_buffer.c
+        source/shared/crc/crc8.c
 )
 
 # Settings for app
@@ -109,6 +110,7 @@ target_include_directories(${EXECUTABLE_APP} PRIVATE
         source/shared
         source/shared/uart
         source/shared/ring_buffer
+        source/shared/crc
 )
 
 target_compile_options(${EXECUTABLE_APP} PRIVATE
@@ -183,6 +185,8 @@ set(EXECUTABLE_BOOTLOADER ${PROJECT_NAME}-bootloader.out)
 add_executable(${EXECUTABLE_BOOTLOADER} ${STM32CUBEMX_GENERATED_FILES} ${COMMON_FILES}
         source/bootloader/firmware.c
         source/bootloader/firmware.h
+        source/bootloader/comms.c
+        source/shared/crc/crc8.c
 
         source/bootloader/system/stm32f4xx_hal_conf.h
         source/bootloader/system/stm32f4xx_it.h
@@ -211,6 +215,7 @@ target_include_directories(${EXECUTABLE_BOOTLOADER} PRIVATE
         source/shared/uart
         source/shared/uart
         source/shared/ring_buffer
+        source/shared/crc
 )
 
 target_compile_options(${EXECUTABLE_BOOTLOADER} PRIVATE
